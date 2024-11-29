@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 
+
 def build_generator():
     # Use a ResNet-style architecture for the generator
     inputs = layers.Input(shape=(256, 256, 3))  # Assuming input image size is 256x256x3
@@ -20,6 +21,7 @@ def build_generator():
     
     generator = tf.keras.Model(inputs, x)
     return generator
+
 
 def build_discriminator():
     # PatchGAN discriminator
@@ -48,6 +50,7 @@ def discriminator_loss(real_output, fake_output):
     fake_loss = tf.keras.losses.BinaryCrossentropy(from_logits=True)(tf.zeros_like(fake_output), fake_output)
     total_loss = real_loss + fake_loss
     return total_loss
+
 
 def generator_loss(fake_output):
     return tf.keras.losses.BinaryCrossentropy(from_logits=True)(tf.ones_like(fake_output), fake_output)
