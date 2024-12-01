@@ -1,0 +1,15 @@
+USE MAXPOOL
+- instead of using strides =2, use strides = 1,, and MaxPooling2D(pool_size=2)
+
+Use PATCHGAN
+
+Use batch normalization
+    (instance Normalizaiton)
+x = layers.InstanceNormalization()(x)
+
+
+Replace LeakyRelUI with GELU or ReLU
+
+Bad ideas ===================
+add more layers
+Incorporating the residual block

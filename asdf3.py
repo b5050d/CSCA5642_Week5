@@ -1,23 +1,67 @@
 import tensorflow as tf
 from tensorflow.keras import layers, Sequential
+from tensorflow.keras.layers import (
+    Conv2D,
+    ReLU,
+    LeakyReLU,
+    Conv2DTranspose,
+    InputLayer,
+    Flatten,
+    Dense,
+)
 
 
 def mvp_generator():
-    genny = Sequential(name="Genny")
+    """
+    Create the minimum Viable product generator to get started
+    """
+    generator = Sequential(name="mvp_generator")
 
-    genny.add(layers.InputLayer(input_shape=(256,256, 3)))
-    genny.add(layers.Conv2D(64, kernel_size = 7, strides = 1, padding = 'same'))
-    genny.add(layers.ReLU())
+    # Handle input layer
+    generator.add(InputLayer(input_shape=(256,256, 3)))
+
+    # Create the Downsampling Part
+    generator.add(Conv2D(64, 3, strides = 2, padding = 'same'))
+    generator.add(LeakyReLU())
+    generator.add(Conv2D(128, 3, strides = 2, padding = 'same'))
+    generator.add(LeakyReLU())
+    generator.add(Conv2D(256, 3, strides = 2, padding = 'same'))
+    generator.add(LeakyReLU())
     
-    x = layers.Conv2D(64, kernel_size=7, strides = 1, padding = 'same')(inputs)
+    # Add a bottleneck layer
+    generator.add(Conv2D(256, 3, strides = 1, padding = 'same'))
+    generator.add(LeakyReLU())
+
+    # Now I need to Upsample back up
+    generator.add(Conv2DTranspose(128, 3, strides = 2, padding = 'same'))
+    generator.add(ReLU())
+    generator.add(Conv2DTranspose(64, 3, strides = 2, padding = 'same'))
+    generator.add(ReLU())
+    
+    # Add the output layer
+    generator.add(Conv2DTranspose(3,3, padding='same', activation = 'tanh'))
+
+    return generator
+
 
 def mvp_discriminator():
-    discr = Sequential(name = "Discr")
+    discriminator = Sequential(name = "mvp_discriminator")
 
-    discr.add(layers.InputLayer(input_shape=(256,256,3)))
-    discr.add(layers.Conv2D(64, kernel_size = 4, strides = 2, padding = 'same'))
+    # Handle input layer
+    discriminator.add(InputLayer(input_shape=(256,256, 3)))
 
+    # Create the Downsampling Part
+    discriminator.add(Conv2D(64, 3, strides = 2, padding = 'same'))
+    discriminator.add(LeakyReLU())
+    discriminator.add(Conv2D(128, 3, strides = 2, padding = 'same'))
+    discriminator.add(LeakyReLU())
+    discriminator.add(Conv2D(256, 3, strides = 2, padding = 'same'))
+    discriminator.add(LeakyReLU())
 
+    discriminator.add(Flatten())
+    discriminator.add(Dense(1, activation = 'sigmoid'))
+    
+    return discriminator
 
-    # Final layer to output one value (real or fake)
-    discr.add(layers.Conv2D(1, kernel_size=4, strides=1, padding='same'))
+gen = mvp_generator()
+print(gen.summary())

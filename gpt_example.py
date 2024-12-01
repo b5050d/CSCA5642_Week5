@@ -31,10 +31,6 @@ train_dataset = load_tfrecord_dataset('your_dataset.tfrecord', batch_size=8)
 
 
 
-
-
-
-
 # Generator model (simple encoder-decoder architecture)
 def build_generator():
     inputs = layers.Input(shape=(256, 256, 3))
@@ -106,7 +102,7 @@ def gram_matrix(x):
     return result / tf.cast(x.shape[1] * x.shape[2], tf.float32)
 
 def style_loss(style_features, generated_features):
-    gram_style = gram_matrix(style_features)
+    gram_style =  (style_features)
     gram_generated = gram_matrix(generated_features)
     return tf.reduce_mean(tf.square(gram_style - gram_generated))
 
@@ -117,6 +113,8 @@ def style_loss(style_features, generated_features):
 
 # Set up the models
 generator = build_generator()
+print(generator.summary())
+input("User pause")
 discriminator = build_discriminator()
 
 # Optimizers
